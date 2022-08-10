@@ -1,38 +1,31 @@
 # .github/workflows/deploy.yml
-name: Deploy 
+name: Deploy to Cloud Run
 on:
   push:
     branches:
       - main
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  APP_ID: continuous-deployment
+  RUN_REGION: us-east1
+  SA_KEY_JSON: ${{ secrets.GCP_SA_KEY_JSON }}
 jobs:
   deploy:
-    name: Deploying
+    name: Deploy to Cloud Run
     runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, 'bump version')"
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      # Build and push image to Google Container Registry
-      - name: Setting up
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          version: '286.0.0'
-          service_account_key: ${{ secrets.GCP_SA_KEY_JSON }}
-          service_account_email: "github-actions@resolute-radar-357007.iam.gserviceaccount.com"
-          project_id: resolute-radar-357007
-
-      - name: Building
-        run: |-
-          gcloud builds submit \
-            --tag gcr.io/resolute-radar-357007/continous-deployment
+      - uses: actions/checkout@v2
 
       # Setup gcloud CLI
-      - name: Deploy
-        uses: google-github-actions/deploy-cloudrun@main
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
         with:
-          service: continous-deployment
-          image: gcr.io/resolute-radar-357007/continous-deployment
-          region: us-east1
-          credentials: ${{ secrets.GCP_SA_KEY_JSON }}
-          project_id: resolute-radar-357007
+          credentials_json: '${{ secrets.GCP_SA_KEY_JSON }}'
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      # Build and push image to Google Container Registry
+      - name: Build
+        run: gcloud builds submit --tag gcr.io/$PROJECT_ID/$APP_ID:$GITHUB_SHA
+
+      - name: Deploy
+        run: gcloud run deploy $PROJECT_ID --image gcr.io/$PROJECT_ID/$APP_ID:$GITHUB_SHA --platform managed --region $RUN_REGION
