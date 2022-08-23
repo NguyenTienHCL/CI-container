@@ -29,3 +29,7 @@ jobs:
 
       - name: Deploy
         run: gcloud run deploy $PROJECT_ID --image gcr.io/$PROJECT_ID/$APP_ID:$GITHUB_SHA --platform managed --allow-unauthenticated --region $RUN_REGION
+  
+      - uses: stackhawk/hawkscan-action@v1.1
+        with:
+          apiKey: ${{ secrets.HAWK_API_KEY }}
