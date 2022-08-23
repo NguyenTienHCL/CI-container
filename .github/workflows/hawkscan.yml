@@ -5,6 +5,14 @@ name: HawkScan
 on:
   push:
 
+app:
+  # -- An applicationId obtained from the StackHawk platform. --
+  applicationId: 8f7a0e5a-e274-4685-9fd8-78344e588154
+  # -- The environment for the applicationId defined in the StackHawk platform. --
+  env: Development 
+  # -- The url of your application to scan --
+  host: http://localhost:3000 
+  
 jobs:
   hawkscan:
     runs-on: ubuntu-latest
