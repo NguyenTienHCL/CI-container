@@ -1,0 +1,16 @@
+# .github/workflows/hawkscan.yml
+
+name: HawkScan
+
+on:
+  push:
+
+jobs:
+  hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: stackhawk/hawkscan-action@v1.1
+        with:
+          apiKey: ${{ secrets.HAWK_API_KEY }}
