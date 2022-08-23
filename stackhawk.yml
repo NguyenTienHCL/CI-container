@@ -4,5 +4,5 @@ app:
   # -- The environment for the applicationId defined in the StackHawk platform. --
   env: Development 
   # -- The url of your application to scan --
-  host: http://localhost:8080
+  host: https://resolute-radar-357007-d7xqgvgdrq-ue.a.run.app
   
